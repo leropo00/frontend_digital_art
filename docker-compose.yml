@@ -1,0 +1,23 @@
+#version: '3.8'
+
+services:
+
+  node:
+    platform: linux/amd64 #this line is optional if you are using Mac Silicon chip (M1/M2/M3)
+    container_name: digital-art-fe
+    build:
+      context: ./app
+      dockerfile: ../Dockerfile
+    image: digital-art-fe
+    ports:
+      - "3000:3000"
+    restart: 'no'
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    #networks:
+    #  - digital_art_network
+
+networks:
+  exercise-network:
+    driver: bridge
