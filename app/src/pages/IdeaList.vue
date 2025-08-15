@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-lg rounded-lg overflow-hidden mx-4 md:mx-10">
+  <div class="shadow-lg rounded-lg overflow-hidden m-4 md:m-10">
     <table class="w-full table-fixed">
       <thead>
         <tr class="bg-gray-300">
@@ -17,7 +17,9 @@
             {{ item.identifier_name }}
           </td>
           <td>
-            {{ item.id }}
+            <a :href="`/idea_details/${item.id}`" @click="navigate">
+              Detail link         
+            </a>
           </td>
         </tr>
       </tbody>
@@ -30,14 +32,14 @@ import { computed, onMounted, ref } from 'vue'
 import useArtIdeasList from '../stores/artIdeasList'
 import axiosClient from '@/axios.js'
 
-const ideasLists = useArtIdeasList()
 
+
+const ideasLists = useArtIdeasList()
 const itemsList = computed(() => ideasLists.data);
 
 onMounted(async () => {
   await ideasLists.fetchList()
 })
-
 
 </script>
 
