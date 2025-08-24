@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import axiosClient from '../axios'
-import {URL_GET_IDEAS_DETAILS} from '../constants'
+import axiosClient from '@/axios'
+import {URL_GET_IDEAS_DETAILS} from '@/constants'
 
 const route = useRoute()
 const ideaId = Number(route.params.id)

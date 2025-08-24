@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import useArtIdeasStore from '../stores/artIdeasStore'
+import useArtIdeasStore from '@/stores/artIdeasStore'
 
 
 const ideasLists = useArtIdeasStore()
