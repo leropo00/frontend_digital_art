@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import useReferenceMaterialStore from '@/stores/useReferenceMaterialStore'
 
 const referenceMaterialStore = useReferenceMaterialStore()

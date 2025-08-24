@@ -22,4 +22,6 @@ const navLinks = [
   </header>
 
   <RouterView />
+  <notifications />
+
 </template>
