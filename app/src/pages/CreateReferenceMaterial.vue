@@ -49,7 +49,51 @@
 
             <div class="mt-10">
                 Storage References
-                {{ referenceMaterialData.storage }}
+                <table class="w-full">
+                    <thead class="bg-gray-300">
+                        <tr> 
+                            <th>Type</th>
+                            <th>Link</th>
+                            <th></th>
+                        </tr>
+                        <tr> 
+                            <th>
+                                <select class="bg-white" v-model="editableStorageData.storage_type">
+                                    <option 
+                                        v-for="option in valuesStorageType" 
+                                        :key="option.value" 
+                                        :value="option.value">
+                                        {{ option.label }}
+                                    </option>
+                                </select>
+                            </th>
+                            <th>
+                                <input type ="text" class="bg-white" v-model="editableStorageData.storage_link" />
+                            </th>
+                            <th>
+                                <button @click="insertStorageUrlRow()"
+                                    class="cursor-pointer rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    Add
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in referenceMaterialData.storage" :key="index">
+                            <td>
+                                {{ item.storage_type }}
+                            </td>
+                            <td>
+                                {{ item.storage_link }}
+                            </td>
+                             <td>
+                                <button @click="removeStorageUrlRow(index)">
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="mt-10">
@@ -82,12 +126,41 @@ import {
 import { reactive, toRaw } from 'vue'
 import axiosClient from '@/axios.js'
 
+// 'https://www.reddit.com/r/Art/comments/1myzdh4/rust_blazeismyfirstname_ink_2025/'
+
+const valuesStorageType = [
+    {
+        'value': STORAGE_TYPE_URL_LINK,
+        'label': 'Url Link',
+    },
+    {
+        'value': STORAGE_TYPE_LOCAL_DISK,
+        'label': 'Local Disk',
+    },
+]
 
 const referenceMaterialData = reactive({
   reference_material_type: '',
   description: '',
   storage: [], 
 })
+
+const editableStorageData = reactive({
+  storage_type: STORAGE_TYPE_URL_LINK,
+  storage_link: '',
+})
+
+function insertStorageUrlRow() {
+    referenceMaterialData.storage.push({
+            'storage_type': editableStorageData.storage_type,
+            'storage_link': editableStorageData.storage_link,
+        })
+    editableStorageData.storage_link = '' 
+}
+
+function removeStorageUrlRow(index) {
+    referenceMaterialData.storage.splice(index, 1)
+}
 
 function createReferenceMaterial() {
   axiosClient.post(URL_CREATE_REFERENCE_MATERIAL, toRaw(referenceMaterialData))
