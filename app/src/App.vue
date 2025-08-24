@@ -12,7 +12,7 @@ const navLinks = [
 
 <template>
   <header>
-    <div class="wrapper">
+    <div class="wrapper mb-6">
       <nav class="flex">
         <span class="px-2"  v-for="(link, index) in navLinks" :key="index">
           <RouterLink :to="link.to">{{ link.label }}</RouterLink>
