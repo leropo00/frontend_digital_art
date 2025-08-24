@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../pages/HomeView.vue'
-import IdeaList from '../pages/IdeaList.vue'
-import IdeaDetails from '../pages/IdeaDetails.vue'
+import ArtIdeaList from '../pages/ArtIdeaList.vue'
+import ArtIdeaDetails from '../pages/ArtIdeaDetails.vue'
+import ReferenceMateriaList from '../pages/ReferenceMateriaList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,19 +13,20 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/ideas_list',
+      path: '/art_ideas_list',
       name: 'ideas',
-      component: IdeaList,
+      component: ArtIdeaList,
+    },
+    { path: '/art_idea/:id', 
+      name: 'idea_details',
+      component: ArtIdeaDetails,
     },
     {
-      path: '/ideas_list',
-      name: 'ideas',
-      component: IdeaList,
+      path: '/reference_list',
+      name: 'references',
+      component: ReferenceMateriaList,
     },
-    { path: '/idea_details/:id', 
-      name: 'idea_details',
-      component: IdeaDetails,
-    },
+
   ],
 })
 

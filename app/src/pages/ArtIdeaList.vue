@@ -17,7 +17,7 @@
             {{ item.identifier_name }}
           </td>
           <td>
-            <a :href="`/idea_details/${item.id}`" @click="navigate">
+            <a :href="`/art_idea/${item.id}`" @click="navigate">
               Detail link         
             </a>
           </td>
@@ -29,12 +29,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import useArtIdeasList from '../stores/artIdeasList'
-import axiosClient from '@/axios.js'
+import useArtIdeasStore from '../stores/artIdeasStore'
 
 
-
-const ideasLists = useArtIdeasList()
+const ideasLists = useArtIdeasStore()
 const itemsList = computed(() => ideasLists.data);
 
 onMounted(async () => {

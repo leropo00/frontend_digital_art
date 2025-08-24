@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import axiosClient from '../axios'
+import axiosClient from '../axios.ts'
 import { URL_GET_IDEAS_LIST } from '../constants.ts'
 
-const useArtIdeasList = defineStore('artIdeasList', {
+const useArtIdeasStore = defineStore('artIdeas', {
   state: () => ({
     data: [],
   }),
@@ -18,4 +18,4 @@ const useArtIdeasList = defineStore('artIdeasList', {
   },
 })
 
-export default useArtIdeasList
+export default useArtIdeasStore
