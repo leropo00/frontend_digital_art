@@ -3,6 +3,7 @@ const URL_GET_IDEAS_DETAILS = '/art_ideas/'
 const URL_GET_REFERENCE_MATERIAL = "/reference_materials"
 
 const URL_CREATE_ART_IDEA = URL_GET_IDEAS_LIST;
+const URL_CREATE_REFERENCE_MATERIAL = URL_GET_REFERENCE_MATERIAL;
 
 
 // types of images, based on definitions on backed
@@ -26,6 +27,7 @@ export {
     URL_GET_IDEAS_DETAILS,
     URL_GET_REFERENCE_MATERIAL,
     URL_CREATE_ART_IDEA,
+    URL_CREATE_REFERENCE_MATERIAL,
     // types
     IDEA_TYPE_IMAGE,
     IDEA_TYPE_IMAGE_TEXT,

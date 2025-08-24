@@ -1,9 +1,8 @@
 <template>
-    <div class="space-y-12">
+    <div class="shadow-lg rounded-lg overflow-hidden m-4 md:m-10 space-y-12">
       <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">Create a new Art Idea</h2>
-
-        <div class="mt-10">
+        <h2 class="text-lg font-bold text-gray-900 bg-gray-300 text-center py-1">Create a new Art Idea</h2>
+        <div class="mt-4 px-6">
           <div class="sm:col-span-4">
             <label for="art-idea-identifier" class="block text-sm/6 font-medium text-gray-900">Art Idea Identifier:</label>
             <div class="mt-2">
