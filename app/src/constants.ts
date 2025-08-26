@@ -5,8 +5,7 @@ const URL_GET_REFERENCE_MATERIAL = "/reference_materials"
 const URL_CREATE_ART_IDEA = URL_GET_IDEAS_LIST;
 const URL_CREATE_REFERENCE_MATERIAL = URL_GET_REFERENCE_MATERIAL;
 
-
-// types of images, based on definitions on backed
+// types of images, based on definitions on backend
 // since these likely won't change
 // they are for now hardcoded here
 const IDEA_TYPE_IMAGE = "image"

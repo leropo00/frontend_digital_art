@@ -112,8 +112,8 @@
 
 
 <script setup lang="ts">
-import {IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_IDEA} from '@/constants'
-import { ref, reactive, toRaw  } from 'vue'
+import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_IDEA } from '@/constants'
+import { ref, reactive, toRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosClient from '@/axios.js'
 
