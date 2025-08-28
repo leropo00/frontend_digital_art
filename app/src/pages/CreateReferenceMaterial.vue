@@ -35,6 +35,8 @@
                 </div>
             </div>
 
+			TODO: add tags for reference materials
+
             <div class="mt-10">
                 <div class="col-span-full mt-4">
                     <label for="final-description" class="block text-sm/6 font-medium text-gray-900">Reference material description:</label>

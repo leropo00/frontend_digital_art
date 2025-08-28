@@ -7,6 +7,8 @@ const URL_GET_REFERENCE_MATERIAL = "/reference_materials"
 const URL_CREATE_ART_IDEA = URL_GET_IDEAS_LIST;
 const URL_CREATE_REFERENCE_MATERIAL = URL_GET_REFERENCE_MATERIAL;
 const URL_CREATE_ART_QUESTION = URL_CREATE_ART_IDEA + '/' + ID_PLACEHOLDER +'/question';
+const URL_CREATE_ART_TITLE = URL_CREATE_ART_IDEA + '/' + ID_PLACEHOLDER +'/title';
+
 
 // types of images, based on definitions on backend
 // since these likely won't change
@@ -14,6 +16,11 @@ const URL_CREATE_ART_QUESTION = URL_CREATE_ART_IDEA + '/' + ID_PLACEHOLDER +'/qu
 const IDEA_TYPE_IMAGE = "image"
 const IDEA_TYPE_IMAGE_TEXT = "image_with_caption"
 const IDEA_TYPE_TEXT_ONLY = "caption_only"
+
+// other enums, currently are hardcoded
+const TITLE_TYPE_PRIMARY  = "primary"
+const TITLE_TYPE_NOMINAL = "nominal"
+const TITLE_TYPE_ALTERNATIVE = "alternative"
 
 const REFERENCE_TYPE_IMAGE = "image";
 const REFERENCE_TYPE_TUTORIAL_VIDEO = "tutorial_video";
@@ -24,6 +31,8 @@ const STORAGE_TYPE_LOCAL_DISK = "local_disk"
 const STORAGE_TYPE_URL_LINK = "url_link"
 
 export {
+    // id
+    ID_PLACEHOLDER,
     // urls
     URL_GET_IDEAS_LIST,   
     URL_GET_IDEAS_DETAILS,
@@ -31,7 +40,8 @@ export {
     URL_CREATE_ART_IDEA,
     URL_CREATE_REFERENCE_MATERIAL,
     URL_CREATE_ART_QUESTION,
-    // types
+    URL_CREATE_ART_TITLE,
+    // types, enums on backed
     IDEA_TYPE_IMAGE,
     IDEA_TYPE_IMAGE_TEXT,
     IDEA_TYPE_TEXT_ONLY,
@@ -41,6 +51,7 @@ export {
     REFERENCE_TYPE_PROMPT, 
     STORAGE_TYPE_LOCAL_DISK, 
     STORAGE_TYPE_URL_LINK,
-    // id
-    ID_PLACEHOLDER,
+    TITLE_TYPE_PRIMARY,
+    TITLE_TYPE_NOMINAL,
+    TITLE_TYPE_ALTERNATIVE,
 }

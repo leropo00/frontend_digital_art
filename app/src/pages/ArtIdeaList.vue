@@ -31,7 +31,6 @@
 import { computed, onMounted, ref } from 'vue'
 import useArtIdeasStore from '@/stores/useArtIdeasStore'
 
-
 const ideasLists = useArtIdeasStore()
 const itemsList = computed(() => ideasLists.data);
 
