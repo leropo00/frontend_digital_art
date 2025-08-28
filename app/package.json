@@ -19,6 +19,7 @@
     "@kyvg/vue3-notification": "^3.4.1",
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.11.0",
+    "http-status-codes": "^2.3.0",
     "pinia": "^3.0.3",
     "tailwindcss": "^4.1.12",
     "vue": "^3.5.18",

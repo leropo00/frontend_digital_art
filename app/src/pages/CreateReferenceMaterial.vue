@@ -125,6 +125,7 @@ import {
 } from '@/constants'
 import { reactive, toRaw } from 'vue'
 import axiosClient from '@/axios.js'
+import { StatusCodes } from 'http-status-codes';
 
 // 'https://www.reddit.com/r/Art/comments/1myzdh4/rust_blazeismyfirstname_ink_2025/'
 
@@ -165,9 +166,11 @@ function removeStorageUrlRow(index) {
 function createReferenceMaterial() {
   axiosClient.post(URL_CREATE_REFERENCE_MATERIAL, toRaw(referenceMaterialData))
   .then(async (response) => {
-        referenceMaterialData.reference_material_type = ''
-        referenceMaterialData.description = ''
-        referenceMaterialData.storage = []
+        if (response.status === StatusCodes.CREATED) {
+            referenceMaterialData.reference_material_type = ''
+            referenceMaterialData.description = ''
+            referenceMaterialData.storage = []
+        }
   })
   .catch((error) => {
      console.log(error)

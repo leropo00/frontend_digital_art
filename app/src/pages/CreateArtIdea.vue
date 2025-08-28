@@ -12,13 +12,13 @@
                   class="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" placeholder="Unique simple identifier" />
               </div>
             </div>
-            <p class="mt-3 text-sm/6 text-gray-600">Unique identifier of the idea, this is more akin to project name, than to actual title, should be globally unique.</p>
+            <p class="mt-3 text-sm/6 text-gray-600">Unique identifier of the idea, this is more akin to project name, than to actual title, should be globally unique. Can't be changed after creation.</p>
           </div>
 
           <div class="mt-10">
              <fieldset>
                 <legend class="text-sm/6 font-semibold text-gray-900">Art idea type</legend>
-                <p class="mt-1 text-sm/6 text-gray-600">One of 3 possible idea type.</p>
+                <p class="mt-1 text-sm/6 text-gray-600">One of 3 possible idea type, can't be changed after creation.</p>
                 
                 <div class="mt-6 space-y-4">
                 <div class="flex items-center gap-x-3">
@@ -116,6 +116,7 @@ import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_
 import { ref, reactive, toRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosClient from '@/axios.js'
+import { StatusCodes } from 'http-status-codes';
 
 const artIdeaData = reactive({
   identifier_name: '',
@@ -128,9 +129,8 @@ const router = useRouter()
 
 function createArtIdea() {
   axiosClient.post(URL_CREATE_ART_IDEA, toRaw(artIdeaData))
-  .then(async (response) => {
-
-    if (redirectAfterCreation.value) {
+  .then(async (response) => {    
+    if (response.status === StatusCodes.CREATED && redirectAfterCreation.value) {
       router.push(`/art_idea/${response.data.id}`)
     }
   })
