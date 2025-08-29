@@ -11,10 +11,11 @@
                     <div v-if="titleState.count == 0">
                         <div>
                             <label for="new-nominal-title" class="block mb-2 text-sm font-semibold text-gray-900">Art Idea Title</label>
-                            <input type="text" id="new-nominal-title" ref="nominal-title" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "  />
+                            <input type="text" id="new-nominal-title" ref="nominal-title" 
+                                class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "  />
                         </div>
 
-                        <button @click="insertArtNominalTitle()"
+                        <button @click="insertNominalTitle()"
                             class="cursor-pointer rounded-md bg-indigo-600 mt-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             Create Title
                         </button>
@@ -22,20 +23,28 @@
                     <div v-else>
                         <div>
                             <label for="update-nominal-title" class="block mb-2 text-sm font-semibold text-gray-900">Art Idea Title</label>
-                            <input id="update-nominal-title" ref="nominal-title" type="text" :value="item.titles[0].title_text" />
+                            <input id="update-nominal-title" ref="nominal-title" type="text" :disabled="!nominalTitleEdited" :value="item.titles[0].title_text" 
+                                class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "/>
                         </div>
 
-                        <button @click="updateArtNominalTitle()"
-                            class="cursor-pointer rounded-md bg-indigo-600 mt-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Update Title
+                        <button @click="modifiyNominalTitle()" v-if="!nominalTitleEdited"
+                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Modify Title
                         </button>
-
+                        <span v-else>
+                            <button @click="updateNominalTitle()"
+                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Update Title
+                            </button>
+                            <button @click="cancelNominalTitleUpdate()"
+                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Cancel Title Update
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <div class="border-b border-gray-900/10 pb-2 mt-10" v-else>
-
                     <h2 class="text-base/7 font-semibold text-gray-900">Titles:</h2>
-
                     <table class="w-full table-fixed">
                         <thead class="text-lg">
                             <tr class="bg-gray-300">
@@ -54,8 +63,8 @@
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
+
                 <div class="border-b border-gray-900/10 pb-2 mt-10">
                     <h2 class="text-base/7 font-semibold text-gray-900">Idea Description:</h2>
 
@@ -130,14 +139,12 @@
      </div>
 </template>
 
-<script setup lang="ts">import { computed, onMounted, reactive, useTemplateRef } from 'vue'
+<script setup lang="ts">import { computed, onMounted, ref, reactive, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import axiosClient from '@/axios'
 import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
 import { StatusCodes } from 'http-status-codes';
 import { addIdToUrl, replaceUrlIds } from '@/helpers'
-
-
 
 const route = useRoute()
 const artIdeaId = Number(route.params.id)
@@ -164,27 +171,57 @@ onMounted(async () => {
 })
 
 // here are input references
-// title
+
+// nominal only
+// why was template ref used here, should both types have reactive
 const nominalTitleInput = useTemplateRef('nominal-title')
 
-const insertArtNominalTitle = () => {
-    axiosClient.put(addIdToUrl(URL_CREATE_ART_TITLE, artIdeaId), {
-         title_text: nominalTitleInput.value.value, title_type: TITLE_TYPE_NOMINAL,
+// this will be used for table editing, should these two be joined
+// title
+interface Title {
+  title_id: number|null
+  title_text: string
+}
+
+// why use this for title input
+const titleData = reactive<Title>({
+  title_id: null,
+  title_text: '',
+})
+
+const nominalTitleEdited = ref(false)
+
+const modifiyNominalTitle = () => {
+    nominalTitleEdited.value = true
+}
+
+const cancelNominalTitleUpdate = () => {
+    nominalTitleEdited.value = false
+}
+
+const insertNominalTitle = () => {
+    if (nominalTitleInput.value.value.trim().length == 0) {
+        // TODO: add error logging here
+        return
+    }
+    axiosClient.post(addIdToUrl(URL_CREATE_ART_TITLE, artIdeaId), {
+         title_text: nominalTitleInput.value.value.trim(), title_type: TITLE_TYPE_NOMINAL,
     }).then(async (response) => {
         if (response.status === StatusCodes.CREATED) {
-            item.titles.push(response)
+            item.titles.push(response.data)
         }
     }).catch((error) => {
         console.log(error)
     })
 }
 
-const updateArtNominalTitle = () => {
+const updateNominalTitle = () => {
     axiosClient.put(replaceUrlIds(URL_UPDATE_ART_TITLE, artIdeaId,  item.titles[0].id), {
-         title_text: nominalTitleInput.value.value, title_type: TITLE_TYPE_NOMINAL,
+         title_text: nominalTitleInput.value.value.trim(), title_type: TITLE_TYPE_NOMINAL,
     }).then(async (response) => {
         if (response.status === StatusCodes.OK) {
             item.titles[0] = response.data
+            cancelNominalTitleUpdate()
         }
     }).catch((error) => {
         console.log(error)
@@ -192,7 +229,6 @@ const updateArtNominalTitle = () => {
 }
 
 // questions
-
 interface Question {
   question_text: string
   question_id: number|null
@@ -204,6 +240,12 @@ const questionData = reactive<Question>({
 })
 
 const insertQuestion = () => {
+
+    if (questionData.question_text.length == 0) {
+        // TODO add validation
+        return
+    }
+
     axiosClient.post(addIdToUrl(URL_CREATE_ART_QUESTION, artIdeaId), { 
         question_text: questionData.question_text
      }).then(async (response) => {
@@ -230,10 +272,7 @@ const updateQuestion = () => {
     }).catch((error) => {
         console.log(error)
     })
-
 }
-
-
 
 const revertQuestionData = () => {
     questionData.question_id = null
