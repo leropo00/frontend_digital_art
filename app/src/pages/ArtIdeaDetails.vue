@@ -8,11 +8,10 @@
                 Art idea type: {{ item.idea_type }}
 
                 <div class="border-b border-gray-900/10 pb-2 mt-10" v-if="titleState.single">                
-
                     <div v-if="titleState.count == 0">
                         <div>
                             <label for="new-nominal-title" class="block mb-2 text-sm font-semibold text-gray-900">Art Idea Title</label>
-                            <input type="text" name="new-nominal-title" ref="new-nominal-title"class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "  />
+                            <input type="text" id="new-nominal-title" ref="nominal-title" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "  />
                         </div>
 
                         <button @click="insertArtNominalTitle()"
@@ -21,9 +20,17 @@
                         </button>
                     </div>
                     <div v-else>
-                        <input type="text" :value="item.titles[0].title_text" />
-                    </div>
+                        <div>
+                            <label for="update-nominal-title" class="block mb-2 text-sm font-semibold text-gray-900">Art Idea Title</label>
+                            <input id="update-nominal-title" ref="nominal-title" type="text" :value="item.titles[0].title_text" />
+                        </div>
 
+                        <button @click="updateArtNominalTitle()"
+                            class="cursor-pointer rounded-md bg-indigo-600 mt-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Update Title
+                        </button>
+
+                    </div>
                 </div>
                 <div class="border-b border-gray-900/10 pb-2 mt-10" v-else>
 
@@ -72,17 +79,26 @@
                 </div>
                 <div class="border-b border-gray-900/10 pb-2 mt-10">
                     <h2 class="text-base/7 font-semibold text-gray-900">Idea Questions:</h2>
-
                     <div>
                         <textarea name="art-question-text" id="art-question-text" rows="3" 
-                            v-model="descriptionInsertedData"
+                            v-model="questionData.question_text"
                             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                        <button @click="insertArtQuestion()"
-                            class="cursor-pointer rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Add
+                        <button @click="insertQuestion()" v-if="questionData.question_id == null"
+                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Create Question
                         </button>
+                        <span v-else>
+                        <button @click="updateQuestion()"
+                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Update Question
+                        </button>
+                        <button @click="revertQuestionData()"
+                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Cancel Update
+                        </button>
+                        </span>
                     </div>
-                     <table class="w-full table-fixed">
+                     <table class="w-full table-fixed mt-2">
                         <thead class="text-lg">
                             <tr class="bg-gray-300">
                                 <th class="px-6 py-1">Title</th>
@@ -90,12 +106,15 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            <tr v-for="item in item.questions" :key="item.id">
+                            <tr v-for="item in item.questions" :key="item.id" :class="{'bg-indigo-300': questionData.question_id == item.id}" >
                                 <td class="px-6 py-1">
                                     {{ item.question_text }}
                                 </td>
-                                <td class="px-6 py-1">
-                                    {{ item.id }}
+                                <td class="px-6 py-1">                                    
+                                    <button @click="editQuestion(item.id)"
+                                        class="cursor-pointer rounded-md bg-indigo-600 mt-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Edit question
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -111,20 +130,18 @@
      </div>
 </template>
 
-<script setup lang="ts">import { computed, onMounted, reactive, ref, useTemplateRef } from 'vue'
+<script setup lang="ts">import { computed, onMounted, reactive, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import axiosClient from '@/axios'
-import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
+import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
 import { StatusCodes } from 'http-status-codes';
-import {addIdToUrl} from '@/helpers'
+import { addIdToUrl, replaceUrlIds } from '@/helpers'
+
+
 
 const route = useRoute()
 const artIdeaId = Number(route.params.id)
-
-const newNominalTitleInput = useTemplateRef('new-nominal-title')
-
 const item = reactive({})
-
 // images only have one title
 const titleState = computed(() => {
     if (!item.idea_type) {
@@ -132,56 +149,6 @@ const titleState = computed(() => {
     } 
     return {'single': item.idea_type == IDEA_TYPE_IMAGE, 'count': item.titles.length}
 })
-
-
-const descriptionInsertedData = ref('')
-
-const descriptionUpdatedData = ref({
-  item_id: null,
-  item_name: '',
-  quantity: 1,
-})
-
-const insertArtQuestion = () => {
-
-    axiosClient.post(addIdToUrl(URL_CREATE_ART_QUESTION, artIdeaId), { 
-        question_text: descriptionInsertedData.value
-     }).then(async (response) => {
-        if (response.status === StatusCodes.CREATED) {
-            item.questions.push(response.data)
-         }
-    }).catch((error) => {
-        console.log(error)
-    })
-
-    /*
-         {
-            "id": 9,
-            "question_text": "how to solve this",
-            "solved_date": null,
-        }
-    */
-}
-
-const insertArtNominalTitle = () => {
-
-    axiosClient.post(addIdToUrl(URL_CREATE_ART_TITLE, artIdeaId), {
-         title_text: newNominalTitleInput.value.value, title_type: TITLE_TYPE_NOMINAL,
-    }).then(async (response) => {
-        if (response.status === StatusCodes.CREATED) {
-            item.titles.push(response)
-        }
-    }).catch((error) => {
-        console.log(error)
-    })
-}
-
-const updateArtNominalTitle = () => {
-    
-    console.log(newNominalTitleInput)
-    console.log(newNominalTitleInput.value.value)
-}
-
 
 const readData = async () => {
     const res = await axiosClient.get(URL_GET_IDEAS_DETAILS + artIdeaId + '?include_titles=true&include_questions=true')
@@ -195,5 +162,91 @@ const readData = async () => {
 onMounted(async () => {
     await readData()
 })
+
+// here are input references
+// title
+const nominalTitleInput = useTemplateRef('nominal-title')
+
+const insertArtNominalTitle = () => {
+    axiosClient.put(addIdToUrl(URL_CREATE_ART_TITLE, artIdeaId), {
+         title_text: nominalTitleInput.value.value, title_type: TITLE_TYPE_NOMINAL,
+    }).then(async (response) => {
+        if (response.status === StatusCodes.CREATED) {
+            item.titles.push(response)
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+const updateArtNominalTitle = () => {
+    axiosClient.put(replaceUrlIds(URL_UPDATE_ART_TITLE, artIdeaId,  item.titles[0].id), {
+         title_text: nominalTitleInput.value.value, title_type: TITLE_TYPE_NOMINAL,
+    }).then(async (response) => {
+        if (response.status === StatusCodes.OK) {
+            item.titles[0] = response.data
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+// questions
+
+interface Question {
+  question_text: string
+  question_id: number|null
+}
+
+const questionData = reactive<Question>({
+  question_id: null,
+  question_text: '',
+})
+
+const insertQuestion = () => {
+    axiosClient.post(addIdToUrl(URL_CREATE_ART_QUESTION, artIdeaId), { 
+        question_text: questionData.question_text
+     }).then(async (response) => {
+        if (response.status === StatusCodes.CREATED) {
+            item.questions.push(response.data)
+            revertQuestionData()
+         }
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+const updateQuestion = () => {
+    axiosClient.patch(replaceUrlIds(URL_UPDATE_ART_QUESTION, artIdeaId, questionData.question_id), {
+        question_text: questionData.question_text
+    }).then(async (response) => {
+        if (response.status === StatusCodes.OK) {
+            const index = item.questions.findIndex(question => question.id == questionData.question_id)
+            if (index >= 0) {
+                item.questions[index] = response.data
+            }
+            revertQuestionData()
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+
+}
+
+
+
+const revertQuestionData = () => {
+    questionData.question_id = null
+    questionData.question_text = ''
+}
+
+const editQuestion = (question_id) => {
+    const res = item.questions.filter(question => question.id == question_id)
+    if (res.length == 0) {
+        return
+    }
+    questionData.question_id = question_id
+    questionData.question_text = res[0].question_text
+}
 
 </script>
