@@ -58,15 +58,48 @@
                                 <th class="px-6 py-1">Title</th>
                                 <th class="px-6 py-1">Actions</th>
                             </tr>
+                            <tr class="bg-gray-300">
+                                <th class="px-6 py-1">
+                                    <input type="text" v-model="titleData.title_text" 
+                                         class="w-full bg-white" :class="{'invisible': titleData.title_id != null}"/> 
+                                </th>
+                                <th class="px-6 py-1">
+                                    <button @click="createIdeaTitle()"  :class="{'invisible': titleData.title_id != null}"
+                                        class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Create Idea Title
+                                    </button>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody class="bg-white">
                             <tr v-for="item in item.titles" :key="item.id">
-                            <td class="px-6 py-1">
-                                {{ item.title_text }}
-                            </td>
-                            <td class="px-6 py-1">
-                                {{ item.id }}
-                            </td>
+                                <td class="px-6 py-1" v-if="titleData.title_id != item.id">
+                                    {{ item.title_text }}
+                                </td>
+                                <td class="px-6 py-1" v-if="titleData.title_id != item.id">
+                                    <button @click="setAsPrimary(item.id)"
+                                        v-if="item.title_type == TITLE_TYPE_ALTERNATIVE"
+                                        class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                            Set as primary
+                                    </button>
+                                    <button @click="editArtTitle(item.id)" class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                            Edit Title
+                                    </button>
+                                </td>
+
+                                <td class="px-6 py-1" v-if="titleData.title_id == item.id">
+                                    <input type="text" :value="item.title_text" 
+                                        class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-indigo-600  focus:border-blue-500 block w-full p-2.5 "  />
+                                </td>
+                                <td class="px-6 py-1" v-if="titleData.title_id == item.id">
+                                    <button @click="updateIdeaTitle()"
+                                        class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Update Title
+                                    </button>
+                                    <button @click="cancelIdeaTitleUpdate()" class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Cancel Update
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -149,7 +182,7 @@
 <script setup lang="ts">import { computed, onMounted, ref, reactive, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import axiosClient from '@/axios'
-import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_DELETE_ART_TITLE, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
+import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_DELETE_ART_TITLE, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL, TITLE_TYPE_PRIMARY, TITLE_TYPE_ALTERNATIVE } from '@/constants'
 import { StatusCodes } from 'http-status-codes';
 import { addIdToUrl, replaceUrlIds } from '@/helpers'
 
@@ -246,6 +279,40 @@ const deleteNominalTitle = () => {
         console.log(error)
     })
 }
+
+function createIdeaTitle() {
+    
+    axiosClient.patch(addIdToUrl(URL_CREATE_ART_TITLE, artIdeaId), {
+         title_text: titleData.title_text.trim(), title_type: item.titles.length == 0 ? TITLE_TYPE_PRIMARY: TITLE_TYPE_ALTERNATIVE,
+    }).then(async (response) => {
+        if (response.status === StatusCodes.CREATED) {
+            item.titles.push(response.data)
+            titleData.title_text = ''
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+
+}
+
+function setAsPrimary(item_id) {
+    // separate endpoint to set primary, because other will be set to 
+}
+
+function editArtTitle(item_id) {
+    titleData.title_id = item_id
+
+}
+
+function updateIdeaTitle() {
+
+}
+
+function cancelIdeaTitleUpdate() {
+    titleData.title_id = null
+    titleData.title_text = ''
+}
+
 
 // questions
 interface Question {

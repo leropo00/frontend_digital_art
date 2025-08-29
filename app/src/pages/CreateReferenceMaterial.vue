@@ -70,7 +70,7 @@
                                 </select>
                             </th>
                             <th>
-                                <input type ="text" class="bg-white" v-model="editableStorageData.storage_link" />
+                                <input type ="text" class="w-full bg-white" v-model="editableStorageData.storage_link" />
                             </th>
                             <th>
                                 <button @click="insertStorageUrlRow()"
