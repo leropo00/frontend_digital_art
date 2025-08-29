@@ -31,16 +31,23 @@
                             class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             Modify Title
                         </button>
-                        <span v-else>
-                            <button @click="updateNominalTitle()"
-                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                Update Title
+                        <div v-else class="flex flex-row justify-between">
+                            <span>
+                                <button @click="updateNominalTitle()"
+                                    class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    Update Title
+                                </button>
+                                <button @click="cancelNominalTitleUpdate()"
+                                    class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    Cancel Title Update
+                                </button>
+                            </span>
+
+                            <button @click="deleteNominalTitle()"
+                                class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Delete Title
                             </button>
-                            <button @click="cancelNominalTitleUpdate()"
-                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                Cancel Title Update
-                            </button>
-                        </span>
+                        </div>
                     </div>
                 </div>
                 <div class="border-b border-gray-900/10 pb-2 mt-10" v-else>
@@ -142,7 +149,7 @@
 <script setup lang="ts">import { computed, onMounted, ref, reactive, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import axiosClient from '@/axios'
-import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
+import { IDEA_TYPE_IMAGE, IDEA_TYPE_IMAGE_TEXT, IDEA_TYPE_TEXT_ONLY, URL_CREATE_ART_QUESTION, URL_DELETE_ART_TITLE, URL_UPDATE_ART_QUESTION, URL_UPDATE_ART_TITLE, URL_CREATE_ART_TITLE, URL_GET_IDEAS_DETAILS, TITLE_TYPE_NOMINAL } from '@/constants'
 import { StatusCodes } from 'http-status-codes';
 import { addIdToUrl, replaceUrlIds } from '@/helpers'
 
@@ -221,6 +228,18 @@ const updateNominalTitle = () => {
     }).then(async (response) => {
         if (response.status === StatusCodes.OK) {
             item.titles[0] = response.data
+            cancelNominalTitleUpdate()
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+const deleteNominalTitle = () => {
+    axiosClient.delete(replaceUrlIds(URL_DELETE_ART_TITLE, artIdeaId,  item.titles[0].id)
+    ).then(async (response) => {
+        if (response.status === StatusCodes.NO_CONTENT) {
+            item.titles = []
             cancelNominalTitleUpdate()
         }
     }).catch((error) => {
