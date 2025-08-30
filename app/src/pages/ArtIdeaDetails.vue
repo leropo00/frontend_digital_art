@@ -117,7 +117,9 @@
                         <label for="intial_idea" class="block text-sm/6 font-medium text-gray-900">Inital Idea:</label>
                         <div class="mt-2">
                         <textarea name="intial-idea" id="intial-idea" rows="3" 
-                            v-model="item.initial_idea"
+                            ref="initial-idea-text" 
+                            :disabled="!ideaDescriptionEdited"
+                            :value="item.initial_idea"
                             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
                     </div>
@@ -126,20 +128,28 @@
                         <label for="final-description" class="block text-sm/6 font-medium text-gray-900">Final Description:</label>
                         <div class="mt-2">
                         <textarea name="final-description" id="final-description" rows="3" 
-                            v-model="item.final_description"
+                            ref="final-description-text" 
+                            :disabled="!ideaDescriptionEdited"
+                            :value="item.final_description"
                             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
                     </div>
 
-                    <div class="flex flex-row flex-start">
-                        <button @click="updateIdeaDescriptions()"
-                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Update Description
-                        </button>
-                        <button @click="revertIdeaDescriptions()"
-                            class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Revert Values
-                        </button>
+                    <button @click="modifiyIdeaDescriptions()" v-if="!ideaDescriptionEdited"
+                        class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Modify Description
+                    </button>
+                    <div v-else class="flex flex-row justify-between">
+                        <span>
+                            <button @click="updateIdeaDescriptions()"
+                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Update Description
+                            </button>
+                            <button @click="canceIdeaDescriptionsUpdate()"
+                                class="cursor-pointer rounded-md bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Cancel Description Update
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <div class="border-b border-gray-900/10 pb-2 mt-10">
@@ -207,6 +217,7 @@ import { IDEA_TYPE_IMAGE,
     URL_UPDATE_ART_TITLE, 
     URL_SET_TITLE_PRIMARY, 
     URL_CREATE_ART_TITLE,
+    URL_UPDATE_ART_IDEA,
     URL_GET_IDEAS_DETAILS, 
     TITLE_TYPE_NOMINAL, 
     TITLE_TYPE_PRIMARY, 
@@ -255,20 +266,39 @@ onMounted(async () => {
 // here are input references and update functions
 // descriptions
 
-function updateIdeaDescriptions() {
+const modifiyIdeaDescriptions = () => {
+    ideaDescriptionEdited.value = true
+}
 
-    //@router.patch(
-    //    "/{art_idea_id}/questions/{question_id}",
+const canceIdeaDescriptionsUpdate = () => {
+    ideaDescriptionEdited.value = false
 
 }
-function revertIdeaDescriptions() {
-    // revert back descriptions to the values
-    // if this will be reactive how will you change this
+
+const intialIdeaInput = useTemplateRef('initial-idea-text')
+const finalDescriptionInput = useTemplateRef('final-description-text')
+
+function updateIdeaDescriptions() {
+    const inital_idea = intialIdeaInput.value.value.trim()
+    const final_description = finalDescriptionInput.value.value.trim()
+
+    axiosClient.patch(addIdToUrl(URL_UPDATE_ART_IDEA, artIdeaId), {
+         initial_idea: inital_idea, final_description: final_description
+    }).then(async (response) => {
+        if (response.status === StatusCodes.OK) {
+            item.initial_idea = response.data.initial_idea
+            item.final_description = response.data.final_description
+            canceIdeaDescriptionsUpdate()
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
 }
 
 // nominal only
 // why was template ref used here, should both types have reactive
 const nominalTitleInput = useTemplateRef('nominal-title')
+
 
 // this will be used for table editing, should these two be joined
 // title
@@ -292,6 +322,9 @@ const modifiyNominalTitle = () => {
 const cancelNominalTitleUpdate = () => {
     nominalTitleEdited.value = false
 }
+
+const ideaDescriptionEdited = ref(false)
+
 
 const insertNominalTitle = () => {
     if (nominalTitleInput.value.value.trim().length == 0) {
