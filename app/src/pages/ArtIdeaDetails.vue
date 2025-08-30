@@ -77,14 +77,19 @@
                                     {{ item.title_text }}
                                 </td>
                                 <td class="px-6 py-1" v-if="titleData.title_id != item.id">
+                                    <button @click="modifyArtTitle(item.id)" class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Edit Title
+                                    </button>
                                     <button @click="setTitleAsPrimary(item.id)"
                                         v-if="item.title_type == TITLE_TYPE_ALTERNATIVE"
                                         class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                            Set as primary
+                                        Set as primary
                                     </button>
-                                    <button @click="modifyArtTitle(item.id)" class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                            Edit Title
-                                    </button>
+                                    <button @click="deleteIdeaTitle(item.id)"
+                                        v-if="item.title_type == TITLE_TYPE_ALTERNATIVE"
+                                        class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        Delete Title
+                                    </button>                                    
                                 </td>
 
                                 <td class="px-6 py-1" v-if="titleData.title_id == item.id">
@@ -355,8 +360,26 @@ function cancelIdeaTitleUpdate() {
     titleData.title_text = ''
 }
 
-function setTitleAsPrimary(title_id) {
 
+
+function updateIdeaTitle() {
+    axiosClient.patch(replaceUrlIds(URL_UPDATE_ART_TITLE, artIdeaId, titleData.title_id), {
+         title_text: titleData.title_text,
+    }).then(async (response) => {
+        if (response.status === StatusCodes.OK) {
+            const index = titles.value.findIndex(title => title.id == titleData.title_id)
+            if (index >= 0) {
+                titles.value[index] = response.data
+            }
+            titleData.title_text = ''
+            titleData.title_id = null
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+function setTitleAsPrimary(title_id) {
     axiosClient.put(replaceUrlIds(URL_SET_TITLE_PRIMARY, artIdeaId, title_id), {
          title_text: titleData.title_text,
     }).then(async (response) => {
@@ -376,17 +399,19 @@ function setTitleAsPrimary(title_id) {
     })
 }
 
-function updateIdeaTitle() {
-    axiosClient.patch(replaceUrlIds(URL_UPDATE_ART_TITLE, artIdeaId, titleData.title_id), {
-         title_text: titleData.title_text,
-    }).then(async (response) => {
-        if (response.status === StatusCodes.OK) {
-            const index = titles.value.findIndex(title => title.id == titleData.title_id)
+const deleteIdeaTitle = (title_id) => {
+    // TODO need to add controls to delete primary idea title
+    // only alternative title deletes are allowed
+
+    // add confirmation for delete
+
+    axiosClient.delete(replaceUrlIds(URL_DELETE_ART_TITLE, artIdeaId,  title_id)
+    ).then(async (response) => {
+        if (response.status === StatusCodes.NO_CONTENT) {
+            const index = titles.value.findIndex(title => title.id == title_id)
             if (index >= 0) {
-                titles.value[index] = response.data
+                titles.value.splice(index, 1)
             }
-            titleData.title_text = ''
-            titleData.title_id = null
         }
     }).catch((error) => {
         console.log(error)
