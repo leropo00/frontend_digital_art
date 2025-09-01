@@ -6,7 +6,7 @@ The frontend counterpart to the project: https://github.com/leropo00/digital_art
 
 ## Project tech stack and coding style
 
-Project uses NodeJs, Vue 3, Vite and Tailwind. Project is configured to use Typescript, but Typescript functionalities are currently not used much and will be  gradually added. Project is intended for testing the backend project functionalities. Design is intentiontaly simple and code is not optimized.
+Project uses NodeJs, Vue 3, Vite and Tailwind. Project is configured to use Typescript, but Typescript functionalities are currently not used much and will be gradually added. Project is intended for testing the backend project functionalities. Design is intentiontaly simple and code is not optimized.
 
 
 ## Project setup
@@ -42,7 +42,7 @@ docker-compose up -d
 
 By default project is accesed at url: http://localhost:3000/.
 
-This is defined in .env file. If you plan to change the url of the application, make sure to also change in the backend project, FRONTEND_URL, because of CORS.
+This is defined in .env file. If you plan to change the url of the application, make sure to also change the in the backend project .env file, variable FRONTEND_URL, because of CORS.
 
 
 
