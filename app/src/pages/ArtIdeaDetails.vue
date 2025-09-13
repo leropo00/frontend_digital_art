@@ -96,7 +96,6 @@ const readData = async () => {
     const res = await axiosClient.get(URL_GET_IDEAS_DETAILS + artIdeaId + '?include_titles=true&include_questions=true')
     // TODO check if sucessfull 
     for (const key in res.data) {
-        console.log(key)
         if(key == 'questions') {
             questionsData = res.data[key]
         } 

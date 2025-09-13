@@ -20,7 +20,7 @@
             </tr>
         </thead>
         <tbody class="bg-white">
-            <tr v-for="item in titles" :key="item.id">
+            <tr v-for="item in titlesSorted" :key="item.id">
                 <td class="px-6 py-1" v-if="titleData.title_id != item.id">
                     {{ item.title_text }}
                 </td>
@@ -34,7 +34,7 @@
                         Set as primary
                     </button>
                     <button @click="deleteIdeaTitle(item.id)"
-                        v-if="item.title_type == TITLE_TYPE_ALTERNATIVE"
+                        v-if="item.title_type == TITLE_TYPE_ALTERNATIVE || titles.length == 1"
                         class="cursor-pointer rounded-md justify-end bg-indigo-600 mt-4 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                         Delete Title
                     </button>                                    
@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import axiosClient from '@/axios'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { 
     TITLE_TYPE_ALTERNATIVE, 
     TITLE_TYPE_PRIMARY, 
@@ -77,6 +77,15 @@ import { addIdToUrl, replaceUrlIds } from '@/helpers'
 const props = defineProps(['artIdeaId', 'titlesData'])
 const titles = ref(props.titlesData)
 
+const titlesSorted = computed(() => {
+    if (!titles.value) {
+        return []
+    }
+
+    return titles.value.filter((title) => title.title_type == TITLE_TYPE_PRIMARY)
+        .concat(titles.value.filter((title) => title.title_type == TITLE_TYPE_ALTERNATIVE))
+
+})
 
 
 // this will be used for table editing, should these two be joined
