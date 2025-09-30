@@ -1,9 +1,8 @@
-name: digital_art_assistant_frontend
+name: digital-art-assistant-frontend
 
 services:
-
-  app_frontend:
-    image: digital_art_assistant_fe_node
+  app-frontend:
+    image: digital-art-assistant-fe-node
     platform: linux/amd64 #this line is optional if you are using Mac Silicon chip (M1/M2/M3)
     build:
       context: ./app
@@ -15,9 +14,9 @@ services:
       - ./app:/usr/src/app
       - /usr/src/app/node_modules
     networks:
-      - digital_art_network
+      - digital-art-network
 
 networks:
-  digital_art_network:
-    name: digital_art_assistant_network
+  digital-art-network:
+    name: digital-art-assistant-network
     external: true
