@@ -1,23 +1,23 @@
-#version: '3.8'
+name: digital_art_assistant_frontend
 
 services:
 
-  node:
+  app_frontend:
+    image: digital_art_assistant_fe_node
     platform: linux/amd64 #this line is optional if you are using Mac Silicon chip (M1/M2/M3)
-    container_name: digital-art-fe
     build:
       context: ./app
       dockerfile: ../Dockerfile
-    image: digital-art-fe
     ports:
       - "3000:3000"
-    restart: 'no'
+    restart: unless-stopped
     volumes:
       - ./app:/usr/src/app
       - /usr/src/app/node_modules
-    #networks:
-    #  - digital_art_network
+    networks:
+      - digital_art_network
 
 networks:
-  exercise-network:
-    driver: bridge
+  digital_art_network:
+    name: digital_art_assistant_network
+    external: true
