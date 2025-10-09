@@ -1,7 +1,8 @@
 # Frontend for Digital Art AI Assistant
 
 
-The frontend counterpart to the project: https://github.com/leropo00/digital_art_ai_agents_ml. This project is currently still being developed together with the backend for the purpose of testing project functionalities.
+The frontend counterpart to the project: https://github.com/leropo00/backend_digital_art. 
+This project is currently still being developed together with the backend for the purpose of testing project functionalities.
 
 
 ## Project tech stack and coding style
@@ -42,7 +43,7 @@ docker-compose up -d
 
 By default project is accesed at url: http://localhost:3000/.
 
-This is defined in .env file. If you plan to change the url of the application, make sure to also change the in the backend project .env file, variable FRONTEND_URL, because of CORS.
+This is defined in .env file. If you plan to change the url of the application, make sure to also change in the backend's project .env file, variable FRONTEND_URL, because of CORS.
 
 
 
