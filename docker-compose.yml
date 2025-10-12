@@ -14,9 +14,9 @@ services:
       - ./app:/usr/src/app
       - /usr/src/app/node_modules
     networks:
-      - digital-art-network
+      - digital-art-network-fe
 
 networks:
-  digital-art-network:
-    name: digital-art-assistant-network
-    external: true
+  digital-art-network-fe:
+    driver: bridge
+    name: digital-art-assistant-fe-network
